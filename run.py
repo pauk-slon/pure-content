@@ -41,7 +41,8 @@ def main():
         with closing(urlopen(url)) as html_page_stream:
             content_parser = ContentParser()
             title, content = content_parser.parse(html_page_stream)
-            print title
+            print title.upper()
+            print ''
             print content
     except (URLError, HTTPError) as error:
         print error
