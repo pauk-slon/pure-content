@@ -16,9 +16,9 @@ class DefaultFormatter(object):
             text = a.text.strip()
             a.string = u'[{text}]({href})'.format(
                 text=text,
-                href=a['href'],
+                href=a.get('href'),
             ) if text else u'[{href}]'.format(
-                href=a['href'],
+                href=a.get('href'),
             )
         paragraphs = []
         for paragraph_tag in tag.contents:

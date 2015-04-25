@@ -5,6 +5,7 @@ from contextlib import closing
 from urllib2 import urlopen, URLError, HTTPError
 
 from pure_content.parsing import ContentParser
+from pure_content.storage import Container
 
 
 def validate_url(url):
@@ -41,11 +42,13 @@ def main():
         with closing(urlopen(url)) as html_page_stream:
             content_parser = ContentParser()
             title, content = content_parser.parse(html_page_stream)
-            print title.upper()
-            print ''
-            print content
     except (URLError, HTTPError) as error:
         print error
+        return
+    container = Container(url, title, content)
+    container.save()
+    print 'Saved to:'
+    print container.get_path()
 
 if __name__ == '__main__':
     main()

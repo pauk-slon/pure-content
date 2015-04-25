@@ -17,3 +17,5 @@ $ pip install -r requirements.txt
 ```sh
 $ python run.py --url=http://lenta.ru/news/2015/04/23/slezhka/
 ```
+
+The result of execution you can see in the `data` folder
