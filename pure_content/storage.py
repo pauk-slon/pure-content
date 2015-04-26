@@ -47,8 +47,14 @@ class FileStorageManager(StorageManager):
         resource_directory = os.path.dirname(path)
         if not os.path.exists(resource_directory):
             os.makedirs(resource_directory)
-        with open(path, 'w+') as resource_file:
-            resource_file.write(resource.content.encode('utf-8'))
+        if resource.is_text:
+            mode = 'w+'
+            content = resource.content.encode('utf-8')
+        else:
+            mode = 'wb+'
+            content = resource.content
+        with open(path, mode=mode) as resource_file:
+            resource_file.write(content)
 
 
 class ResourceBase(object):
@@ -66,6 +72,10 @@ class ResourceBase(object):
 
 
 class ItemResource(ResourceBase):
+    def __init__(self, container, content=None, text_content=True):
+        ResourceBase.__init__(self, container, content)
+        self._is_text = text_content
+
     @property
     def content(self):
         return self._content
@@ -77,6 +87,10 @@ class ItemResource(ResourceBase):
     @property
     def is_item(self):
         return True
+
+    @property
+    def is_text(self):
+        return self._is_text
 
 
 class CollectionResource(ResourceBase):
@@ -94,8 +108,30 @@ class CollectionResource(ResourceBase):
         return False
 
 
+class Images(CollectionResource):
+    def __init__(self, container, images):
+        content = {}
+        urls = []
+        for image_name, image_item in images.items():
+            content[image_name] = ItemResource(
+                container=self,
+                content=image_item['content'],
+                text_content=False,
+            )
+            url = image_item['url']
+            urls.append((url, image_name))
+        urls_content = u'\n'.join(
+            u'{file_name} <- {url}'.format(
+                url=url,
+                file_name=file_name
+            ) for url, file_name in urls
+        )
+        content['urls.log'] = ItemResource(self, urls_content)
+        CollectionResource.__init__(self, container, content)
+
+
 class Container(CollectionResource):
-    def __init__(self, url, title, text):
+    def __init__(self, url, title, text, images=None):
         self.storage_manager = FileStorageManager()
         text_md5 = md5(text.encode('utf-8'))
         self._name = text_md5.hexdigest()
@@ -107,6 +143,8 @@ class Container(CollectionResource):
             'article.title': ItemResource(self, title),
             'article.txt': ItemResource(self, text),
         }
+        if images:
+            content['images'] = Images(self, images)
         CollectionResource.__init__(self, None, content)
 
     @property

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import urlparse
 
 from bs4 import BeautifulSoup
@@ -31,9 +32,25 @@ class ContentParser(object):
                          tag_name, url_attribute):
         absolutizer = UrlAbsolutizer(page_url)
         for tag in content_tag.find_all(tag_name):
-            if url_attribute in tag:
+            if tag.get(url_attribute):
                 page_url = tag[url_attribute]
                 tag[url_attribute] = absolutizer.absolutize(page_url)
+
+    def _parse_images(self, content_tag):
+        images = {}
+        for img_tag in content_tag.find_all('img'):
+            if not img_tag.get('src'):
+                continue
+            image_url = img_tag['src']
+            parsed_url = urlparse.urlparse(image_url)
+            _filename, ext = os.path.splitext(parsed_url.path)
+            new_image_name = u'{number:03}{ext}'.format(
+                number=len(images) + 1,
+                ext=ext
+            )
+            images[new_image_name] = image_url
+            img_tag['src'] = new_image_name
+        return images
 
     def parse(self, page_url, page_stream):
         document = BeautifulSoup(page_stream)
@@ -48,6 +65,11 @@ class ContentParser(object):
         content_tag = max(tag_stats.keys(), key=lambda tag: len(tag_stats[tag]))
         self._absolutize_urls(page_url, content_tag, 'a', 'href')
         self._absolutize_urls(page_url, content_tag, 'img', 'src')
+        images = self._parse_images(content_tag)
         formatter = DefaultFormatter(page_url)
         formatted_text = formatter.format(content_tag)
-        return title, formatted_text
+        return {
+            'title': title,
+            'text': formatted_text,
+            'images': images,
+        }

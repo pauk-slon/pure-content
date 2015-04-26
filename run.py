@@ -41,11 +41,18 @@ def main():
     try:
         with closing(urlopen(url)) as html_page_stream:
             content_parser = ContentParser()
-            title, content = content_parser.parse(url, html_page_stream)
+            parsed_page = content_parser.parse(url, html_page_stream)
     except (URLError, HTTPError) as error:
         print error
         return
-    container = Container(url, title, content)
+    images = {}
+    for image_name, image_url in parsed_page['images'].items():
+        with closing(urlopen(image_url)) as image_stream:
+            images[image_name] = {
+                'url': image_url,
+                'content': image_stream.read(),
+            }
+    container = Container(url, parsed_page['title'], parsed_page['text'], images)
     container.save()
     print 'Saved to:'
     print container.get_path()
