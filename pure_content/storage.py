@@ -26,18 +26,11 @@ class StorageManager(object):
 
 class FileStorageManager(StorageManager):
     def get_path(self, keys):
-        return u'{storage_directory}{sep}{resource_rel_path}'.format(
-            storage_directory=self._storage_directory,
-            sep=os.path.sep,
-            resource_rel_path=os.path.sep.join(keys),
-        )
+        return os.path.join(self._storage_directory, *keys)
 
     @classmethod
     def _get_default_storage_directory(cls):
-        return u'{working_directory}{sep}data'.format(
-            working_directory=os.getcwd(),
-            sep=os.path.sep,
-        )
+        return os.path.join(os.getcwd(), 'data')
 
     def load_resource(self, path, resource):
         with open(path, 'r') as resource_file:
