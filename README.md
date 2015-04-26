@@ -7,7 +7,7 @@ Selects the main content of a web page.
 ```sh
 $ git clone https://github.com/pauk-slon/pure-content.git
 $ cd pure-content
-$ # if you use virtualenv activate it here
+$ # if you use virtualenv, activate it here
 $ pip install -r requirements.txt
 ```
 
