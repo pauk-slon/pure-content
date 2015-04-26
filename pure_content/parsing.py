@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 import os
 import urlparse
 
@@ -6,6 +7,9 @@ from bs4 import BeautifulSoup
 
 from pure_content.analysis import AverageParagraphLengthAnalyzer
 from pure_content.formatting import DefaultFormatter
+
+
+logger = logging.getLogger('pure_content')
 
 
 class UrlAbsolutizer(object):
@@ -20,8 +24,8 @@ class UrlAbsolutizer(object):
         try:
             if not self.is_absolute(url):
                 return urlparse.urljoin(self._url, url)
-        except:
-            pass
+        except Exception as error:
+            logger.warning(error)
         return url
 
 
@@ -59,10 +63,18 @@ class ContentParser(object):
             no_main_content_element.extract()
         analyzer = self.average_paragraph_length_analyzer
         tag_stats = analyzer.get_stats(document.body)
+        logger.debug(
+            'tag stats: {tag_stats}'.format(
+                tag_stats=tag_stats.values()
+            )
+        )
         title = document.title.get_text() if document.title else None
         if not tag_stats:
             return title, u''
-        content_tag = max(tag_stats.keys(), key=lambda tag: len(tag_stats[tag]))
+        content_tag = max(
+            tag_stats.keys(),
+            key=lambda tag: len(tag_stats[tag])
+        )
         self._absolutize_urls(page_url, content_tag, 'a', 'href')
         self._absolutize_urls(page_url, content_tag, 'img', 'src')
         images = self._parse_images(content_tag)
