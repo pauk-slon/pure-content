@@ -1,6 +1,6 @@
 # Pure Content
 
-Selects the main content of a web page
+Selects the main content of a web page.
 
 ## Installation
 
@@ -18,4 +18,4 @@ $ pip install -r requirements.txt
 $ python run.py --url=http://lenta.ru/news/2015/04/23/slezhka/
 ```
 
-The result of execution you can see in the `data` folder
+The result of execution you can see in the `data` folder.
