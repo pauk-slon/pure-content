@@ -5,10 +5,8 @@ Selects the main content of a web page.
 ## Installation
 
 ```sh
-$ git clone https://github.com/pauk-slon/pure-content.git
-$ cd pure-content
 $ # if you use virtualenv, activate it here
-$ python setup.py install
+$ pip install git+https://github.com/pauk-slon/pure-content.git
 ```
 
 ## Usage
