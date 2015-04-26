@@ -1,24 +1,7 @@
 # -*- coding: utf-8 -*-
 import textwrap
-import urlparse
 
 from bs4.element import Tag
-
-
-class UrlAbsolutizer(object):
-    @classmethod
-    def is_absolute(cls, url):
-        parsed_url = urlparse.urlparse(url)
-        return bool(parsed_url.netloc)
-
-    @classmethod
-    def absolutize(cls, url, path):
-        try:
-            if not cls.is_absolute(path):
-                return urlparse.urljoin(url, path)
-        except:
-            pass
-        return path
 
 
 class DefaultFormatter(object):
@@ -29,17 +12,13 @@ class DefaultFormatter(object):
 
     def format(self, tag):
         for img in tag.find_all('img'):
-            image_url = (
-                UrlAbsolutizer.absolutize(self._url, img.get('src'))
-            )
+            image_url = img.get('src')
             img.string = u'{{{src}}}'.format(
                 src=image_url
             )
         for a in tag.find_all('a'):
             text = a.text.strip()
-            link_url = (
-                UrlAbsolutizer.absolutize(self._url, a.get('href'))
-            )
+            link_url = a.get('href')
             a.string = u'[{text}]({href})'.format(
                 text=text,
                 href=link_url,
