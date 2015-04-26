@@ -3,7 +3,7 @@ from bs4.element import Tag
 
 
 class AverageParagraphLengthAnalyzer(object):
-    MIN_PARAGRAPH_LENGTH = 160
+    MIN_PARAGRAPH_LENGTH = 180
 
     def _get_average_paragraph_length(self, text):
         lines = text.splitlines()

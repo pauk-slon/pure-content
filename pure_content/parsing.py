@@ -25,7 +25,7 @@ class UrlAbsolutizer(object):
             if not self.is_absolute(url):
                 return urlparse.urljoin(self._url, url)
         except Exception as error:
-            logger.warning(error)
+            logger.error(error)
         return url
 
 
@@ -70,7 +70,12 @@ class ContentParser(object):
         )
         title = document.title.get_text() if document.title else None
         if not tag_stats:
-            return title, u''
+            return {
+                'title': title,
+                'text': u'',
+                'images': {},
+            }
+
         content_tag = max(
             tag_stats.keys(),
             key=lambda tag: len(tag_stats[tag])
