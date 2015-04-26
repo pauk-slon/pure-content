@@ -40,7 +40,7 @@ def main():
     argument_parser.add_argument(
         '-u', '--url',
         type=unicode,
-        help=u'URL of a web page which will be clean'
+        help=u'URL of a web page which will be purified'
     )
     args = argument_parser.parse_args()
     url = args.url
