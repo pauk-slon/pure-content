@@ -118,7 +118,6 @@ class Container(CollectionResource):
             children.append((keys, resource))
         else:
             for key, value in resource.items():
-                print key, value
                 self._fill_child_list(children, keys + [key], value)
 
     def save(self):
